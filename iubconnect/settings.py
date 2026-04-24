@@ -10,6 +10,16 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-iub-connect-secret-ke
 DEBUG = os.environ.get('RENDER', '') == '' # False if on Render, True locally
 ALLOWED_HOSTS = ['*'] # In production, set to your Render URL or keep '*'
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',
+    'https://*.github.dev',
+    'https://*.gitpod.io',
+    'https://*.loca.lt',
+    'https://*.ngrok-free.app',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
+
 INSTALLED_APPS = [
     'daphne',
     'django.contrib.admin',
