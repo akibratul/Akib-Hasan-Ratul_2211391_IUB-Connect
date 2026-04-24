@@ -1,0 +1,94 @@
+{% extends "dashboard.html" %}
+{% block title %}Career Guide — IUB Connect{% endblock %}
+{% block content %}
+<div class="space-y">
+  <!-- Header -->
+  <div class="welcome-banner">
+    <h1 style="display:flex;align-items:center;gap:.5rem;position:relative;z-index:1">
+      <i data-lucide="lightbulb" style="width:28px;height:28px;color:#fbbf24"></i> Career Recommendations
+    </h1>
+    <p style="position:relative;z-index:1">AI-powered career suggestions based on your profile</p>
+    {% if profile %}
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem;position:relative;z-index:1">
+      <span class="badge badge-primary">{{ profile.department }}</span>
+      {% for skill in profile.get_skills_list|slice:":5" %}
+      <span class="badge badge-accent">{{ skill }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Recommendations -->
+  <div class="grid-2 grid-responsive">
+    {% for r in recommendations %}
+    <div class="glass-card glass-card-hover">
+      <div class="flex-between mb-4">
+        <div class="flex-gap">
+          <div style="width:48px;height:48px;border-radius:.75rem;background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(16,185,129,.2));display:flex;align-items:center;justify-content:center">
+            <i data-lucide="trending-up" style="width:24px;height:24px;color:var(--primary-400)"></i>
+          </div>
+          <div>
+            <h3 style="color:var(--dark-50);font-weight:600">{{ r.title }}</h3>
+            <p style="font-size:.75rem;color:var(--dark-500)">{{ r.matchPercentage }}% match</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:2px">
+          {% for _ in "12345"|make_list %}
+          {% if forloop.counter <= r.stars %}
+          <i data-lucide="star" style="width:12px;height:12px;color:#fbbf24;fill:#fbbf24"></i>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+      <div class="progress-bar" style="margin-bottom:.75rem"><div class="progress-fill" style="width:{{ r.matchPercentage }}%"></div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:.75rem">
+        {% for reason in r.matchReasons %}
+        <span style="font-size:.625rem;padding:.125rem .5rem;border-radius:9999px;background:rgba(42,47,62,.5);color:var(--dark-400)">{{ reason }}</span>
+        {% endfor %}
+      </div>
+      <div>
+        <p style="font-size:.75rem;color:var(--dark-500);margin-bottom:.5rem;display:flex;align-items:center;gap:.25rem">
+          <i data-lucide="book-open" style="width:12px;height:12px"></i> Skills to learn:
+        </p>
+        <div style="display:flex;flex-wrap:wrap;gap:.25rem">
+          {% for skill in r.suggestedSkills|slice:":5" %}
+          <span class="skill-tag skill-tag-accent">{{ skill }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Matched Jobs -->
+  {% if matched_jobs %}
+  <div class="glass-card">
+    <h2 style="font-size:1.125rem;font-weight:700;color:var(--dark-50);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem">
+      <i data-lucide="briefcase" style="width:20px;height:20px;color:#fbbf24"></i> Matched Job Opportunities
+    </h2>
+    <div class="grid-2 grid-responsive">
+      {% for j in matched_jobs %}
+      <div style="padding:1rem;border-radius:.75rem;background:rgba(10,14,26,.5);border:1px solid rgba(42,47,62,.3)">
+        <h3 style="color:var(--dark-50);font-weight:600;font-size:.875rem">{{ j.title }}</h3>
+        <p style="font-size:.75rem;color:var(--dark-400);display:flex;align-items:center;gap:.25rem;margin-top:.25rem">
+          <i data-lucide="building-2" style="width:12px;height:12px"></i> {{ j.company }}
+        </p>
+        <div style="display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.5rem">
+          {% for skill in j.skills_list %}
+          <span class="skill-tag">{{ skill }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if not recommendations %}
+  <div class="glass-card" style="text-align:center;padding:3rem">
+    <i data-lucide="zap" style="width:48px;height:48px;color:var(--dark-600);margin:0 auto 1rem;display:block"></i>
+    <p style="color:var(--dark-400)">Complete your profile with skills and interests to get personalized career recommendations.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "dashboard.html" %}
+{% block title %}Manage Users — IUB Connect{% endblock %}
+{% block content %}
+<div class="space-y">
+  <h1 class="page-title"><i data-lucide="users" style="width:24px;height:24px;color:var(--primary-400)"></i> Manage Users</h1>
+
+  <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+    <form method="get" style="flex:1;min-width:200px">
+      <input type="text" name="q" class="input-field" placeholder="Search by name or email..." value="{{ query }}">
+      {% if role_filter %}<input type="hidden" name="role" value="{{ role_filter }}">{% endif %}
+    </form>
+    <div style="display:flex;gap:.5rem">
+      <a href="{% url 'admin_users' %}" class="btn btn-sm {% if not role_filter %}btn-primary{% else %}btn-secondary{% endif %}">All</a>
+      <a href="?role=student{% if query %}&q={{ query }}{% endif %}" class="btn btn-sm {% if role_filter == 'student' %}btn-primary{% else %}btn-secondary{% endif %}">Students</a>
+      <a href="?role=alumni{% if query %}&q={{ query }}{% endif %}" class="btn btn-sm {% if role_filter == 'alumni' %}btn-primary{% else %}btn-secondary{% endif %}">Alumni</a>
+    </div>
+  </div>
+
+  <div class="space-y-sm">
+    {% for u in users %}
+    <div class="glass-card" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+      <div class="avatar {% if u.role == 'student' %}avatar-blue{% else %}avatar-purple{% endif %}">
+        {% if u.profile_photo %}<img src="{{ u.profile_photo.url }}" alt="">{% else %}{{ u.display_initial }}{% endif %}
+      </div>
+      <div style="flex:1;min-width:0">
+        <p style="color:var(--dark-50);font-weight:600">{{ u.full_display_name }}</p>
+        <p style="font-size:.875rem;color:var(--dark-400)">{{ u.email }}</p>
+        <div style="display:flex;gap:.5rem;margin-top:.25rem;flex-wrap:wrap">
+          <span class="badge {% if u.role == 'student' %}badge-primary{% else %}badge-accent{% endif %}">{{ u.role }}</span>
+          <span style="font-size:.75rem;color:var(--dark-500)">Joined {{ u.date_joined|date:"M d, Y" }}</span>
+        </div>
+      </div>
+      <a href="{% url 'admin_delete_user' u.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Delete {{ u.full_display_name }}? This cannot be undone.')">
+        <i data-lucide="trash-2" style="width:14px;height:14px"></i> Delete
+      </a>
+    </div>
+    {% empty %}
+    <div class="glass-card" style="text-align:center;padding:2rem">
+      <p style="color:var(--dark-500)">No users found</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

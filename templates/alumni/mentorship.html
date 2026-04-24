@@ -1,0 +1,112 @@
+{% extends "dashboard.html" %}
+{% block title %}Mentorship Requests — IUB Connect{% endblock %}
+{% block content %}
+<div class="space-y">
+  <div class="flex-between" style="flex-wrap:wrap;gap:1rem">
+    <div>
+      <h1 class="page-title"><i data-lucide="users" style="width:24px;height:24px;color:#a78bfa"></i> Mentorship Requests</h1>
+      <p class="page-subtitle">Manage student mentorship requests</p>
+    </div>
+    {% if accepted_count > 0 %}
+    <a href="{% url 'chat' %}" class="btn btn-primary">
+      <i data-lucide="message-circle" style="width:16px;height:16px"></i> Open Chat ({{ accepted_count }})
+    </a>
+    {% endif %}
+  </div>
+
+  <!-- Filter Cards -->
+  <div class="grid-3">
+    <a href="?tab={% if tab == 'pending' %}all{% else %}pending{% endif %}" class="glass-card {% if tab == 'pending' %}glass-card-hover{% endif %}" style="padding:1rem;{% if tab == 'pending' %}background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3){% endif %}">
+      <div class="flex-gap">
+        <div style="width:40px;height:40px;border-radius:.5rem;background:linear-gradient(135deg,#f59e0b,#ea580c);display:flex;align-items:center;justify-content:center">
+          <i data-lucide="clock" style="width:20px;height:20px;color:#fff"></i>
+        </div>
+        <div><div style="font-size:1.5rem;font-weight:800;color:var(--dark-50)">{{ pending_count }}</div><div style="font-size:.75rem;color:var(--dark-400)">Pending</div></div>
+      </div>
+    </a>
+    <a href="?tab={% if tab == 'accepted' %}all{% else %}accepted{% endif %}" class="glass-card {% if tab == 'accepted' %}glass-card-hover{% endif %}" style="padding:1rem;{% if tab == 'accepted' %}background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.3){% endif %}">
+      <div class="flex-gap">
+        <div style="width:40px;height:40px;border-radius:.5rem;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center">
+          <i data-lucide="check-circle" style="width:20px;height:20px;color:#fff"></i>
+        </div>
+        <div><div style="font-size:1.5rem;font-weight:800;color:var(--dark-50)">{{ accepted_count }}</div><div style="font-size:.75rem;color:var(--dark-400)">Accepted</div></div>
+      </div>
+    </a>
+    <a href="?tab={% if tab == 'rejected' %}all{% else %}rejected{% endif %}" class="glass-card {% if tab == 'rejected' %}glass-card-hover{% endif %}" style="padding:1rem;{% if tab == 'rejected' %}background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3){% endif %}">
+      <div class="flex-gap">
+        <div style="width:40px;height:40px;border-radius:.5rem;background:linear-gradient(135deg,#ef4444,#dc2626);display:flex;align-items:center;justify-content:center">
+          <i data-lucide="x-circle" style="width:20px;height:20px;color:#fff"></i>
+        </div>
+        <div><div style="font-size:1.5rem;font-weight:800;color:var(--dark-50)">{{ rejected_count }}</div><div style="font-size:.75rem;color:var(--dark-400)">Declined</div></div>
+      </div>
+    </a>
+  </div>
+
+  <!-- Sessions List -->
+  <div class="space-y-sm">
+    {% for s in sessions %}
+    <div class="glass-card">
+      <div style="display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap">
+        <div class="avatar avatar-blue">
+          {% if s.student.profile_photo %}<img src="{{ s.student.profile_photo.url }}" alt="">{% else %}{{ s.student.display_initial }}{% endif %}
+        </div>
+        <div style="flex:1;min-width:0">
+          <div class="flex-between" style="flex-wrap:wrap;gap:.5rem">
+            <div>
+              <p style="color:var(--dark-50);font-weight:600;font-size:1.125rem">{{ s.student.full_display_name }}</p>
+              <p style="font-size:.875rem;color:var(--dark-400)">{{ s.student.email }}</p>
+              <div style="display:flex;align-items:center;gap:.75rem;margin-top:.5rem;flex-wrap:wrap">
+                {% if s.student.student_profile %}
+                <span style="font-size:.75rem;color:var(--dark-300);display:flex;align-items:center;gap:.25rem">
+                  <i data-lucide="building-2" style="width:14px;height:14px;color:var(--dark-500)"></i> {{ s.student.student_profile.department }}
+                </span>
+                <span style="font-size:.75rem;color:var(--dark-300);display:flex;align-items:center;gap:.25rem">
+                  <i data-lucide="graduation-cap" style="width:14px;height:14px;color:var(--dark-500)"></i> Year {{ s.student.student_profile.year }}
+                </span>
+                {% endif %}
+                <span style="font-size:.75rem;color:var(--dark-500);display:flex;align-items:center;gap:.25rem">
+                  <i data-lucide="calendar" style="width:14px;height:14px"></i> {{ s.created_at|date:"M d, Y" }}
+                </span>
+              </div>
+            </div>
+            <span class="badge {% if s.status == 'accepted' %}badge-accent{% elif s.status == 'rejected' %}badge-danger{% else %}badge-warning{% endif %}">
+              {% if s.status == 'accepted' %}<i data-lucide="check-circle" style="width:14px;height:14px"></i>{% elif s.status == 'rejected' %}<i data-lucide="x-circle" style="width:14px;height:14px"></i>{% else %}<i data-lucide="clock" style="width:14px;height:14px"></i>{% endif %}
+              {{ s.status }}
+            </span>
+          </div>
+
+          {% if s.message %}
+          <div style="margin-top:.75rem;padding:.75rem;border-radius:.75rem;background:rgba(10,14,26,.5);border:1px solid rgba(42,47,62,.3)">
+            <p style="font-size:.75rem;color:var(--dark-500);margin-bottom:.25rem;display:flex;align-items:center;gap:.25rem">
+              <i data-lucide="message-square" style="width:12px;height:12px"></i> Student's message
+            </p>
+            <p style="font-size:.875rem;color:var(--dark-300)">{{ s.message }}</p>
+          </div>
+          {% endif %}
+
+          <div style="display:flex;gap:.5rem;margin-top:1rem">
+            {% if s.status == 'pending' %}
+            <a href="{% url 'respond_mentorship' s.id 'accepted' %}" class="btn btn-accent btn-sm">
+              <i data-lucide="check-circle" style="width:16px;height:16px"></i> Accept
+            </a>
+            <a href="{% url 'respond_mentorship' s.id 'rejected' %}" class="btn btn-danger btn-sm">
+              <i data-lucide="x-circle" style="width:16px;height:16px"></i> Decline
+            </a>
+            {% elif s.status == 'accepted' %}
+            <a href="{% url 'chat' %}" class="btn btn-primary btn-sm">
+              <i data-lucide="message-circle" style="width:16px;height:16px"></i> Chat with Student
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="glass-card" style="text-align:center;padding:3rem">
+      <i data-lucide="sparkles" style="width:48px;height:48px;color:var(--dark-700);margin:0 auto .75rem;display:block"></i>
+      <p style="color:var(--dark-500)">{% if tab == 'all' %}No mentorship requests yet{% else %}No {{ tab }} requests{% endif %}</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

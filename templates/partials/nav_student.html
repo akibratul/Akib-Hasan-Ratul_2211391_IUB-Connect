@@ -1,0 +1,25 @@
+<a href="{% url 'student_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}">
+  <i data-lucide="layout-dashboard" style="width:18px;height:18px"></i> Dashboard
+</a>
+<a href="{% url 'student_resources' %}" class="nav-link {% if request.resolver_match.url_name == 'student_resources' %}active{% endif %}">
+  <i data-lucide="book-open" style="width:18px;height:18px"></i> Resources
+</a>
+<a href="{% url 'student_mentorship' %}" class="nav-link {% if request.resolver_match.url_name == 'student_mentorship' %}active{% endif %}">
+  <i data-lucide="users" style="width:18px;height:18px"></i> Mentorship
+</a>
+<a href="{% url 'chat' %}" class="nav-link {% if request.resolver_match.url_name == 'chat' %}active{% endif %}">
+  <i data-lucide="message-circle" style="width:18px;height:18px"></i> Messages
+</a>
+<a href="{% url 'student_jobs' %}" class="nav-link {% if request.resolver_match.url_name == 'student_jobs' %}active{% endif %}">
+  <i data-lucide="briefcase" style="width:18px;height:18px"></i> Jobs
+</a>
+<a href="{% url 'student_career' %}" class="nav-link {% if request.resolver_match.url_name == 'student_career' %}active{% endif %}">
+  <i data-lucide="lightbulb" style="width:18px;height:18px"></i> Career Guide
+</a>
+<a href="{% url 'notifications' %}" class="nav-link {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}">
+  <i data-lucide="bell" style="width:18px;height:18px"></i> Notifications
+  {% if unread_count %}<span class="badge-count">{{ unread_count }}</span>{% endif %}
+</a>
+<a href="{% url 'profile' %}" class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+  <i data-lucide="user" style="width:18px;height:18px"></i> Profile
+</a>

@@ -1,0 +1,38 @@
+{% extends "dashboard.html" %}
+{% block title %}Notifications — IUB Connect{% endblock %}
+{% block content %}
+<div class="space-y">
+  <div class="flex-between" style="flex-wrap:wrap;gap:1rem">
+    <h1 class="page-title">
+      <i data-lucide="bell" style="width:24px;height:24px;color:#f43f5e"></i> Notifications
+      {% if unread > 0 %}
+      <span style="margin-left:.5rem;background:var(--danger);color:#fff;font-size:.75rem;padding:.125rem .625rem;border-radius:9999px">{{ unread }} new</span>
+      {% endif %}
+    </h1>
+    {% if unread > 0 %}
+    <a href="{% url 'mark_all_read' %}" class="btn btn-secondary btn-sm">
+      <i data-lucide="check-check" style="width:16px;height:16px"></i> Mark all read
+    </a>
+    {% endif %}
+  </div>
+
+  <div class="space-y-sm">
+    {% for n in notifs %}
+    <a href="{% if not n.read %}{% url 'mark_read' n.id %}{% else %}#{% endif %}" class="glass-card" style="display:flex;align-items:flex-start;gap:.75rem;padding:1rem;cursor:pointer;text-decoration:none;color:inherit;{% if not n.read %}border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.05){% endif %}">
+      <div style="width:8px;height:8px;border-radius:50%;margin-top:.5rem;flex-shrink:0;background:{% if n.read %}var(--dark-600){% else %}var(--primary-500){% endif %}"></div>
+      <div style="flex:1">
+        <p style="font-size:.875rem;color:{% if n.read %}var(--dark-400){% else %}var(--dark-50){% endif %}">{{ n.message }}</p>
+        <p style="font-size:.75rem;color:var(--dark-500);margin-top:.25rem;display:flex;align-items:center;gap:.25rem">
+          <i data-lucide="clock" style="width:12px;height:12px"></i> {{ n.created_at|timesince }} ago
+        </p>
+      </div>
+    </a>
+    {% empty %}
+    <div class="glass-card" style="text-align:center;padding:3rem">
+      <i data-lucide="bell" style="width:48px;height:48px;color:var(--dark-600);margin:0 auto .75rem;display:block"></i>
+      <p style="color:var(--dark-500)">No notifications yet</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

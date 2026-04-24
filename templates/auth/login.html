@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login — IUB Connect{% endblock %}
+
+{% block body %}
+<div class="auth-page">
+  <!-- Left: Branding -->
+  <div class="auth-brand">
+    <div class="overlay"></div>
+    <div class="blob1"></div>
+    <div class="blob2"></div>
+    <div class="auth-brand-content">
+      <img src="{% static 'images/logo.png' %}" alt="IUB Connect" style="width:72px;height:72px;border-radius:50%;margin-bottom:2rem;box-shadow:0 8px 30px rgba(0,0,0,.3)">
+      <h1>IUB<br>Connect</h1>
+      <p>Your gateway to academic collaboration, mentorship, and career growth.</p>
+      <div class="auth-features">
+        <div class="auth-feature"><div class="dot"></div><span>Connect with alumni mentors</span></div>
+        <div class="auth-feature"><div class="dot"></div><span>Share academic resources</span></div>
+        <div class="auth-feature"><div class="dot"></div><span>Get AI-powered career guidance</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Form -->
+  <div class="auth-form-side">
+    <div class="auth-form animate-fade-in">
+      <div style="display:none" class="auth-mobile-logo">
+        <img src="{% static 'images/logo.png' %}" alt="" style="width:48px;height:48px;border-radius:50%">
+        <h1 style="font-size:1.5rem;font-weight:700;color:var(--primary-400);margin-left:.75rem">IUB Connect</h1>
+      </div>
+      <h2>Welcome Back</h2>
+      <p class="subtitle">Sign in to continue your journey</p>
+
+      <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="form-group">
+          <label>Sign in as</label>
+          <input type="hidden" name="role" id="role-input" value="{{ form.role.value|default:'student' }}">
+          <div class="role-selector" style="grid-template-columns: 1fr 1fr 1fr;">
+            <button type="button" class="role-btn {% if form.role.value == 'student' or not form.role.value %}active{% endif %}" data-role="student">🎓 Student</button>
+            <button type="button" class="role-btn {% if form.role.value == 'alumni' %}active{% endif %}" data-role="alumni">👨‍💼 Alumni</button>
+            <button type="button" class="role-btn {% if form.role.value == 'admin' %}active{% endif %}" data-role="admin">👑 Admin</button>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <div style="position:relative">
+            <i data-lucide="mail" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--dark-500)"></i>
+            <input type="email" name="email" id="login-email" class="input-field" style="padding-left:2.75rem" placeholder="id@iub.edu.bd" required value="{{ form.email.value|default:'' }}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <div style="position:relative">
+            <i data-lucide="lock" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--dark-500)"></i>
+            <input type="password" name="password" id="login-password" class="input-field" style="padding-left:2.75rem" placeholder="••••••••" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" style="padding:.75rem;margin-top:.5rem">
+          Sign In <i data-lucide="arrow-right" style="width:18px;height:18px"></i>
+        </button>
+      </form>
+
+      <p style="margin-top:2rem;text-align:center;color:var(--dark-400)">
+        Don't have an account?
+        <a href="{% url 'register' %}" style="font-weight:500">Create one</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

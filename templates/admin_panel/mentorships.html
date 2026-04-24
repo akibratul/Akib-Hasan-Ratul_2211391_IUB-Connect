@@ -1,0 +1,52 @@
+{% extends "dashboard.html" %}
+{% block title %}Mentorships — IUB Connect{% endblock %}
+{% block content %}
+<div class="space-y">
+  <h1 class="page-title"><i data-lucide="handshake" style="width:24px;height:24px;color:var(--primary-400)"></i> Mentorship Sessions</h1>
+
+  <div class="grid-3">
+    <a href="?tab={% if tab == 'pending' %}all{% else %}pending{% endif %}" class="glass-card" style="padding:1rem;{% if tab == 'pending' %}background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3){% endif %}">
+      <div class="flex-gap">
+        <div style="width:36px;height:36px;border-radius:.5rem;background:linear-gradient(135deg,#f59e0b,#ea580c);display:flex;align-items:center;justify-content:center">
+          <i data-lucide="clock" style="width:18px;height:18px;color:#fff"></i>
+        </div>
+        <div><div style="font-size:1.25rem;font-weight:800;color:var(--dark-50)">{{ pending_count }}</div><div style="font-size:.75rem;color:var(--dark-400)">Pending</div></div>
+      </div>
+    </a>
+    <a href="?tab={% if tab == 'accepted' %}all{% else %}accepted{% endif %}" class="glass-card" style="padding:1rem;{% if tab == 'accepted' %}background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.3){% endif %}">
+      <div class="flex-gap">
+        <div style="width:36px;height:36px;border-radius:.5rem;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center">
+          <i data-lucide="check-circle" style="width:18px;height:18px;color:#fff"></i>
+        </div>
+        <div><div style="font-size:1.25rem;font-weight:800;color:var(--dark-50)">{{ accepted_count }}</div><div style="font-size:.75rem;color:var(--dark-400)">Accepted</div></div>
+      </div>
+    </a>
+    <a href="?tab={% if tab == 'rejected' %}all{% else %}rejected{% endif %}" class="glass-card" style="padding:1rem;{% if tab == 'rejected' %}background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3){% endif %}">
+      <div class="flex-gap">
+        <div style="width:36px;height:36px;border-radius:.5rem;background:linear-gradient(135deg,#ef4444,#dc2626);display:flex;align-items:center;justify-content:center">
+          <i data-lucide="x-circle" style="width:18px;height:18px;color:#fff"></i>
+        </div>
+        <div><div style="font-size:1.25rem;font-weight:800;color:var(--dark-50)">{{ rejected_count }}</div><div style="font-size:.75rem;color:var(--dark-400)">Declined</div></div>
+      </div>
+    </a>
+  </div>
+
+  <div class="space-y-sm">
+    {% for s in sessions %}
+    <div class="glass-card" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+      <div class="avatar avatar-blue" style="width:40px;height:40px;font-size:.875rem">{{ s.student.display_initial }}</div>
+      <div style="flex:1;min-width:0">
+        <p style="color:var(--dark-50);font-weight:600">{{ s.student.full_display_name }} → {{ s.mentor.full_display_name }}</p>
+        <p style="font-size:.875rem;color:var(--dark-400)">{{ s.created_at|date:"M d, Y" }}</p>
+      </div>
+      <span class="badge {% if s.status == 'accepted' %}badge-accent{% elif s.status == 'rejected' %}badge-danger{% else %}badge-warning{% endif %}">{{ s.status }}</span>
+      <a href="{% url 'admin_delete_session' s.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Delete this session?')">
+        <i data-lucide="trash-2" style="width:14px;height:14px"></i>
+      </a>
+    </div>
+    {% empty %}
+    <div class="glass-card" style="text-align:center;padding:2rem"><p style="color:var(--dark-500)">No sessions</p></div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

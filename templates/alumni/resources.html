@@ -1,0 +1,24 @@
+{% extends "dashboard.html" %}
+{% block title %}Resources — IUB Connect{% endblock %}
+{% block content %}
+<div class="space-y">
+  <h1 class="page-title"><i data-lucide="book-open" style="width:24px;height:24px;color:#60a5fa"></i> Academic Resources</h1>
+  <div class="grid-3 grid-responsive">
+    {% for r in resources %}
+    <div class="glass-card glass-card-hover">
+      <div style="width:40px;height:40px;border-radius:.5rem;background:rgba(96,165,250,.2);display:flex;align-items:center;justify-content:center">
+        <i data-lucide="file-text" style="width:20px;height:20px;color:#60a5fa"></i>
+      </div>
+      <h3 style="color:var(--dark-50);font-weight:600;margin-top:.75rem;font-size:.875rem">{{ r.title }}</h3>
+      <p style="font-size:.75rem;color:var(--dark-500);margin-top:.25rem">{{ r.original_name|default:"File" }}</p>
+      <p style="font-size:.75rem;color:var(--dark-500);margin-top:.25rem">by {{ r.uploaded_by.full_display_name }} · {{ r.upload_date|date:"M d, Y" }}</p>
+      <a href="{{ r.file.url }}" target="_blank" class="btn btn-secondary btn-sm" style="margin-top:.75rem">
+        <i data-lucide="download" style="width:14px;height:14px"></i> Download
+      </a>
+    </div>
+    {% empty %}
+    <p style="color:var(--dark-500);grid-column:1/-1;text-align:center;padding:2rem">No resources yet</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

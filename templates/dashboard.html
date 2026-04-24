@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body %}
+<div class="layout">
+  <!-- Mobile Menu Button -->
+  <button class="mobile-menu-btn" id="mobileMenuBtn">
+    <i data-lucide="menu" style="width:20px;height:20px"></i>
+  </button>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <img src="{% static 'images/logo.png' %}" alt="IUB Connect Logo">
+        <div>
+          <h1>IUB Connect</h1>
+          <small>Academic Platform</small>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      {% if user.role == 'student' %}
+        {% include "partials/nav_student.html" %}
+      {% elif user.role == 'alumni' %}
+        {% include "partials/nav_alumni.html" %}
+      {% elif user.role == 'admin' %}
+        {% include "partials/nav_admin.html" %}
+      {% endif %}
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">
+          {% if user.profile_photo %}
+            <img src="{{ user.profile_photo.url }}" alt="">
+          {% else %}
+            {{ user.display_initial }}
+          {% endif %}
+        </div>
+        <div>
+          <div class="user-name">{{ user.full_display_name }}</div>
+          <div class="user-role">{{ user.role }}</div>
+        </div>
+      </div>
+      <a href="{% url 'logout' %}" class="nav-link" style="margin-top:.5rem;color:var(--dark-500)">
+        <i data-lucide="log-out" style="width:18px;height:18px"></i> Logout
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content animate-fade-in">
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% endblock %}

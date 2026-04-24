@@ -1,0 +1,103 @@
+{% extends "dashboard.html" %}
+{% load static %}
+{% block title %}Chat — IUB Connect{% endblock %}
+{% block content %}
+<input type="hidden" id="selectedUserId" value="{{ selected_user.id|default:'' }}">
+
+<div class="chat-layout {% if selected_user %}chat-open{% endif %}">
+  <!-- Sidebar -->
+  <div class="chat-sidebar">
+    <div class="chat-sidebar-header">
+      <h2 style="font-size:1.125rem;font-weight:700;color:var(--dark-50);display:flex;align-items:center;gap:.5rem">
+        <i data-lucide="message-circle" style="width:20px;height:20px;color:var(--primary-400)"></i> Messages
+      </h2>
+    </div>
+    <div class="chat-sidebar-list">
+      {% for c in connections %}
+      <a href="?user={{ c.user.id }}" class="chat-contact {% if selected_user and selected_user.id == c.user.id %}active{% endif %}">
+        <div class="avatar {% if c.role == 'alumni' %}avatar-purple{% else %}avatar-blue{% endif %}" style="width:44px;height:44px;font-size:1rem">
+          {% if c.user.profile_photo %}<img src="{{ c.user.profile_photo.url }}" alt="">{% else %}{{ c.user.display_initial }}{% endif %}
+        </div>
+        <div style="flex:1;min-width:0">
+          <div class="flex-between">
+            <p style="font-weight:600;color:var(--dark-50);font-size:.875rem" class="truncate">{{ c.user.full_display_name }}</p>
+            <span style="font-size:.625rem;color:var(--dark-500)">{{ c.last_time|timesince }} ago</span>
+          </div>
+          <p style="font-size:.75rem;color:var(--dark-500);margin-top:.125rem" class="truncate">{{ c.last_message|default:"Start a conversation..." }}</p>
+        </div>
+      </a>
+      {% empty %}
+      <div class="empty-state" style="padding:2rem">
+        <i data-lucide="message-circle" style="width:40px;height:40px;color:var(--dark-600);margin-bottom:.75rem"></i>
+        <p style="color:var(--dark-500);font-size:.875rem">No connections yet</p>
+        <p style="color:var(--dark-600);font-size:.75rem;margin-top:.25rem">Accept or request mentorship to start chatting</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Chat Main -->
+  <div class="chat-main">
+    {% if selected_user %}
+    <div class="chat-header">
+      <div class="flex-gap">
+        <a href="?user=" style="color:var(--dark-400);display:none" class="mobile-back-btn">
+          <i data-lucide="arrow-left" style="width:20px;height:20px"></i>
+        </a>
+        <div class="avatar {% if selected_user.role == 'alumni' %}avatar-purple{% else %}avatar-blue{% endif %}" style="width:40px;height:40px;font-size:1rem">
+          {% if selected_user.profile_photo %}<img src="{{ selected_user.profile_photo.url }}" alt="">{% else %}{{ selected_user.display_initial }}{% endif %}
+        </div>
+        <div>
+          <p style="font-weight:600;color:var(--dark-50)">{{ selected_user.full_display_name }}</p>
+          <p style="font-size:.75rem;color:var(--dark-400)">{{ selected_user.role|title }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      {% regroup chat_messages by created_at.date as grouped %}
+      {% for group in grouped %}
+      <div class="date-divider"><span>{{ group.grouper|date:"M d, Y" }}</span></div>
+      {% for msg in group.list %}
+      <div class="msg-row {% if msg.sender_id == user.id %}mine{% else %}other{% endif %}" data-msg-id="{{ msg.id }}">
+        <div class="msg-bubble {% if msg.sender_id == user.id %}msg-mine{% else %}msg-other{% endif %}">{{ msg.message }}</div>
+        <div class="msg-time">{{ msg.created_at|time:"h:i A" }}</div>
+      </div>
+      {% endfor %}
+      {% endfor %}
+      {% if not chat_messages %}
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i data-lucide="message-circle" style="width:36px;height:36px;color:var(--primary-400)"></i>
+        </div>
+        <p style="color:var(--dark-400);font-weight:600">Start the conversation!</p>
+        <p style="color:var(--dark-500);font-size:.875rem;margin-top:.25rem">Send a message below</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="chat-input-area">
+      <form id="chatForm">
+        {% csrf_token %}
+        <input type="text" id="chatInput" class="input-field" placeholder="Type a message..." autocomplete="off" required>
+        <button type="submit" class="btn btn-primary">
+          <i data-lucide="send" style="width:18px;height:18px"></i>
+        </button>
+      </form>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i data-lucide="message-circle" style="width:36px;height:36px;color:var(--primary-400)"></i>
+      </div>
+      <h3 style="color:var(--dark-50);font-weight:700;font-size:1.25rem">Select a Conversation</h3>
+      <p style="color:var(--dark-500);font-size:.875rem;margin-top:.5rem">Choose from your connections to start chatting</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/chat.js' %}"></script>
+{% endblock %}

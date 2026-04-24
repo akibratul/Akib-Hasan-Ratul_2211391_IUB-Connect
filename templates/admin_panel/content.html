@@ -1,0 +1,57 @@
+{% extends "dashboard.html" %}
+{% block title %}Content Management — IUB Connect{% endblock %}
+{% block content %}
+<div class="space-y">
+  <h1 class="page-title"><i data-lucide="folder-git-2" style="width:24px;height:24px;color:var(--primary-400)"></i> Content Management</h1>
+
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+    <a href="?tab=jobs" class="btn btn-sm {% if tab == 'jobs' %}btn-primary{% else %}btn-secondary{% endif %}">Jobs ({{ jobs|length }})</a>
+    <a href="?tab=resources" class="btn btn-sm {% if tab == 'resources' %}btn-primary{% else %}btn-secondary{% endif %}">Resources ({{ resources|length }})</a>
+  </div>
+
+  {% if tab == 'jobs' %}
+  <div class="space-y-sm">
+    {% for j in jobs %}
+    <div class="glass-card" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+      <div style="flex:1;min-width:0">
+        <p style="color:var(--dark-50);font-weight:600">{{ j.title }}</p>
+        <p style="font-size:.875rem;color:var(--dark-400)">{{ j.company }} · by {{ j.posted_by.full_display_name }} · {{ j.created_at|date:"M d, Y" }}</p>
+        <div style="display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.5rem">
+          {% for skill in j.skills_list %}
+          <span class="skill-tag">{{ skill }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      <a href="{% url 'admin_delete_content' 'job' j.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Delete this job?')">
+        <i data-lucide="trash-2" style="width:14px;height:14px"></i>
+      </a>
+    </div>
+    {% empty %}
+    <div class="glass-card" style="text-align:center;padding:2rem"><p style="color:var(--dark-500)">No jobs</p></div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="space-y-sm">
+    {% for r in resources %}
+    <div class="glass-card" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+      <div style="width:40px;height:40px;border-radius:.5rem;background:rgba(96,165,250,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <i data-lucide="file-text" style="width:20px;height:20px;color:#60a5fa"></i>
+      </div>
+      <div style="flex:1;min-width:0">
+        <p style="color:var(--dark-50);font-weight:600">{{ r.title }}</p>
+        <p style="font-size:.875rem;color:var(--dark-400)">{{ r.original_name }} · by {{ r.uploaded_by.full_display_name }} · {{ r.upload_date|date:"M d, Y" }}</p>
+      </div>
+      <a href="{{ r.file.url }}" target="_blank" class="btn btn-secondary btn-sm">
+        <i data-lucide="download" style="width:14px;height:14px"></i>
+      </a>
+      <a href="{% url 'admin_delete_content' 'resource' r.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Delete this resource?')">
+        <i data-lucide="trash-2" style="width:14px;height:14px"></i>
+      </a>
+    </div>
+    {% empty %}
+    <div class="glass-card" style="text-align:center;padding:2rem"><p style="color:var(--dark-500)">No resources</p></div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

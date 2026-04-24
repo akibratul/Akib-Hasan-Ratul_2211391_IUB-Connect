@@ -1,0 +1,77 @@
+{% extends "dashboard.html" %}
+{% block title %}Admin Dashboard — IUB Connect{% endblock %}
+{% block content %}
+<div class="space-y">
+  <div class="welcome-banner">
+    <h1><i data-lucide="shield" style="width:28px;height:28px;color:var(--primary-400);vertical-align:middle;margin-right:.5rem"></i>Admin Dashboard</h1>
+    <p>Platform overview and management</p>
+  </div>
+
+  <div class="stats-grid">
+    <a href="{% url 'admin_users' %}?role=student" class="stat-card stat-blue glass-card-hover">
+      <div><div class="stat-value">{{ stats.students }}</div><div class="stat-label">Students</div></div>
+      <div class="stat-icon"><i data-lucide="graduation-cap" style="width:22px;height:22px;color:#fff"></i></div>
+    </a>
+    <a href="{% url 'admin_users' %}?role=alumni" class="stat-card stat-purple glass-card-hover">
+      <div><div class="stat-value">{{ stats.alumni }}</div><div class="stat-label">Alumni</div></div>
+      <div class="stat-icon"><i data-lucide="users" style="width:22px;height:22px;color:#fff"></i></div>
+    </a>
+    <a href="{% url 'admin_content' %}" class="stat-card stat-amber glass-card-hover">
+      <div><div class="stat-value">{{ stats.jobs }}</div><div class="stat-label">Job Posts</div></div>
+      <div class="stat-icon"><i data-lucide="briefcase" style="width:22px;height:22px;color:#fff"></i></div>
+    </a>
+    <a href="{% url 'admin_content' %}?tab=resources" class="stat-card stat-green glass-card-hover">
+      <div><div class="stat-value">{{ stats.resources }}</div><div class="stat-label">Resources</div></div>
+      <div class="stat-icon"><i data-lucide="book-open" style="width:22px;height:22px;color:#fff"></i></div>
+    </a>
+    <a href="{% url 'admin_mentorships' %}" class="stat-card stat-orange glass-card-hover">
+      <div><div class="stat-value">{{ stats.mentorships }}</div><div class="stat-label">Mentorships</div></div>
+      <div class="stat-icon"><i data-lucide="handshake" style="width:22px;height:22px;color:#fff"></i></div>
+    </a>
+    <a href="{% url 'admin_mentorships' %}?tab=pending" class="stat-card stat-rose glass-card-hover">
+      <div><div class="stat-value">{{ stats.pending }}</div><div class="stat-label">Pending</div></div>
+      <div class="stat-icon"><i data-lucide="clock" style="width:22px;height:22px;color:#fff"></i></div>
+    </a>
+  </div>
+
+  <div class="grid-2">
+    <!-- Recent Users -->
+    <div class="glass-card">
+      <div class="flex-between mb-4">
+        <h2 style="font-size:1.125rem;font-weight:700;color:var(--dark-50)">Recent Users</h2>
+        <a href="{% url 'admin_users' %}" class="text-sm">View all →</a>
+      </div>
+      <div class="space-y-sm">
+        {% for u in recent_users %}
+        <div style="display:flex;align-items:center;gap:.75rem;padding:.5rem;border-radius:.5rem">
+          <div class="avatar {% if u.role == 'student' %}avatar-blue{% else %}avatar-purple{% endif %}" style="width:32px;height:32px;font-size:.75rem">{{ u.display_initial }}</div>
+          <div style="flex:1;min-width:0">
+            <p style="font-size:.875rem;font-weight:500;color:var(--dark-50)" class="truncate">{{ u.full_display_name }}</p>
+            <p style="font-size:.75rem;color:var(--dark-500)">{{ u.email }}</p>
+          </div>
+          <span class="badge {% if u.role == 'student' %}badge-primary{% else %}badge-accent{% endif %}">{{ u.role }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Recent Jobs -->
+    <div class="glass-card">
+      <div class="flex-between mb-4">
+        <h2 style="font-size:1.125rem;font-weight:700;color:var(--dark-50)">Recent Jobs</h2>
+        <a href="{% url 'admin_content' %}" class="text-sm">View all →</a>
+      </div>
+      <div class="space-y-sm">
+        {% for j in recent_jobs %}
+        <div style="padding:.5rem;border-radius:.5rem">
+          <p style="font-size:.875rem;font-weight:500;color:var(--dark-50)">{{ j.title }}</p>
+          <p style="font-size:.75rem;color:var(--dark-500)">{{ j.company }} · by {{ j.posted_by.full_display_name }}</p>
+        </div>
+        {% empty %}
+        <p style="font-size:.875rem;color:var(--dark-500)">No jobs yet</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

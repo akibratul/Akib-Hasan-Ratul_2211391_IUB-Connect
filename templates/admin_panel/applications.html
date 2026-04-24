@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Admin — Applications{% endblock %}
+
+{% block body %}
+<div style="display:flex;min-height:100vh;background:var(--dark-900)">
+  <!-- Sidebar -->
+  <aside style="width:260px;background:var(--dark-800);border-right:1px solid rgba(42,47,62,.5);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:100">
+    <div style="padding:1.5rem;display:flex;align-items:center;gap:.75rem;border-bottom:1px solid rgba(42,47,62,.5)">
+      <img src="{% static 'images/logo.png' %}" alt="Logo" style="width:32px;height:32px;border-radius:50%">
+      <span style="font-weight:700;font-size:1.125rem;color:var(--dark-50)">Admin Panel</span>
+    </div>
+    <nav style="padding:1.5rem 1rem;display:flex;flex-direction:column;gap:.5rem;flex:1">
+      <a href="{% url 'admin_dashboard' %}" class="nav-item" style="color:var(--dark-400);text-decoration:none;padding:.75rem 1rem;border-radius:.5rem;display:flex;align-items:center;gap:.75rem;font-weight:500;transition:all .2s ease">
+        <i data-lucide="layout-dashboard" style="width:18px;height:18px"></i> Dashboard
+      </a>
+      <a href="{% url 'admin_users' %}" class="nav-item" style="color:var(--dark-400);text-decoration:none;padding:.75rem 1rem;border-radius:.5rem;display:flex;align-items:center;gap:.75rem;font-weight:500;transition:all .2s ease">
+        <i data-lucide="users" style="width:18px;height:18px"></i> Users
+      </a>
+      <a href="{% url 'admin_content' %}" class="nav-item" style="color:var(--dark-400);text-decoration:none;padding:.75rem 1rem;border-radius:.5rem;display:flex;align-items:center;gap:.75rem;font-weight:500;transition:all .2s ease">
+        <i data-lucide="briefcase" style="width:18px;height:18px"></i> Content
+      </a>
+      <a href="{% url 'admin_mentorships' %}" class="nav-item" style="color:var(--dark-400);text-decoration:none;padding:.75rem 1rem;border-radius:.5rem;display:flex;align-items:center;gap:.75rem;font-weight:500;transition:all .2s ease">
+        <i data-lucide="book-open" style="width:18px;height:18px"></i> Mentorships
+      </a>
+      <a href="{% url 'admin_applications' %}" class="nav-item active" style="background:var(--primary-500);color:white;text-decoration:none;padding:.75rem 1rem;border-radius:.5rem;display:flex;align-items:center;gap:.75rem;font-weight:500;transition:all .2s ease">
+        <i data-lucide="file-text" style="width:18px;height:18px"></i> Applications
+      </a>
+      <a href="{% url 'admin_announcements' %}" class="nav-item" style="color:var(--dark-400);text-decoration:none;padding:.75rem 1rem;border-radius:.5rem;display:flex;align-items:center;gap:.75rem;font-weight:500;transition:all .2s ease">
+        <i data-lucide="bell" style="width:18px;height:18px"></i> Announcements
+      </a>
+    </nav>
+    <div style="padding:1.5rem 1rem;border-top:1px solid rgba(42,47,62,.5)">
+      <a href="{% url 'logout' %}" class="nav-item" style="color:#ef4444;text-decoration:none;padding:.75rem 1rem;border-radius:.5rem;display:flex;align-items:center;gap:.75rem;font-weight:500">
+        <i data-lucide="log-out" style="width:18px;height:18px"></i> Log Out
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main style="flex:1;margin-left:260px;padding:2rem;max-width:1200px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem">
+      <div>
+        <h1 style="font-size:1.875rem;font-weight:700;color:var(--dark-50);margin-bottom:.25rem">Job Applications</h1>
+        <p style="color:var(--dark-400)">Monitor all student applications</p>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="glass-card" style="padding:1rem;margin-bottom:2rem">
+      <form method="get" action="{% url 'admin_applications' %}" style="display:flex;gap:1rem;flex-wrap:wrap">
+        <div style="flex:1;min-width:200px">
+          <input type="text" name="q" value="{{ query }}" placeholder="Search by student, job, or company..." class="input-field" style="margin:0">
+        </div>
+        <select name="status" class="input-field" style="width:auto;margin:0" onchange="this.form.submit()">
+          <option value="">All Statuses</option>
+          <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+          <option value="selected" {% if status_filter == 'selected' %}selected{% endif %}>Selected</option>
+          <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+        </select>
+        <button type="submit" class="btn btn-secondary" style="padding:0.6rem 1rem">Search</button>
+      </form>
+    </div>
+
+    <!-- Table -->
+    <div class="glass-card" style="padding:0;overflow:hidden">
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;text-align:left">
+          <thead>
+            <tr style="background:rgba(42,47,62,.3);border-bottom:1px solid rgba(42,47,62,.5)">
+              <th style="padding:1rem 1.5rem;font-weight:600;color:var(--dark-300);font-size:.875rem">Applicant</th>
+              <th style="padding:1rem 1.5rem;font-weight:600;color:var(--dark-300);font-size:.875rem">Job Position</th>
+              <th style="padding:1rem 1.5rem;font-weight:600;color:var(--dark-300);font-size:.875rem">Status</th>
+              <th style="padding:1rem 1.5rem;font-weight:600;color:var(--dark-300);font-size:.875rem">Applied Date</th>
+              <th style="padding:1rem 1.5rem;font-weight:600;color:var(--dark-300);font-size:.875rem">Resume</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for app in applications %}
+            <tr style="border-bottom:1px solid rgba(42,47,62,.5)">
+              <td style="padding:1rem 1.5rem">
+                <div style="display:flex;align-items:center;gap:.75rem">
+                  <div style="width:36px;height:36px;border-radius:50%;background:rgba(99,102,241,.1);color:var(--primary-400);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.875rem">
+                    {{ app.student.display_initial }}
+                  </div>
+                  <div>
+                    <div style="font-weight:500;color:var(--dark-50)">{{ app.student.full_display_name }}</div>
+                    <div style="font-size:.875rem;color:var(--dark-400)">{{ app.student.email }}</div>
+                  </div>
+                </div>
+              </td>
+              <td style="padding:1rem 1.5rem">
+                <div style="font-weight:500;color:var(--dark-50)">{{ app.job.title }}</div>
+                <div style="font-size:.875rem;color:var(--dark-400)">{{ app.job.company }} • {% if app.job.job_type == 'job' %}Job{% else %}Internship{% endif %}</div>
+              </td>
+              <td style="padding:1rem 1.5rem">
+                {% if app.status == 'pending' %}
+                  <span style="display:inline-flex;align-items:center;padding:.25rem .75rem;border-radius:999px;font-size:.75rem;font-weight:600;background:rgba(245,158,11,.1);color:#fbbf24">Pending</span>
+                {% elif app.status == 'selected' %}
+                  <span style="display:inline-flex;align-items:center;padding:.25rem .75rem;border-radius:999px;font-size:.75rem;font-weight:600;background:rgba(16,185,129,.1);color:#34d399">Selected</span>
+                {% else %}
+                  <span style="display:inline-flex;align-items:center;padding:.25rem .75rem;border-radius:999px;font-size:.75rem;font-weight:600;background:rgba(239,68,68,.1);color:#ef4444">Rejected</span>
+                {% endif %}
+              </td>
+              <td style="padding:1rem 1.5rem;color:var(--dark-300);font-size:.875rem">
+                {{ app.applied_at|date:"M d, Y" }}
+              </td>
+              <td style="padding:1rem 1.5rem">
+                {% if app.cv %}
+                <a href="{{ app.cv.url }}" target="_blank" class="btn btn-secondary" style="padding:0.4rem 0.75rem;font-size:.875rem">View CV</a>
+                {% else %}
+                <span style="color:var(--dark-500);font-size:.875rem">No CV</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" style="padding:3rem 1.5rem;text-align:center;color:var(--dark-400)">
+                <i data-lucide="file-x" style="width:48px;height:48px;margin:0 auto 1rem;opacity:.5"></i>
+                <p>No applications found.</p>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

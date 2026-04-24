@@ -1,0 +1,99 @@
+{% extends "dashboard.html" %}
+{% block title %}Dashboard — IUB Connect{% endblock %}
+{% block content %}
+<div class="space-y">
+  <!-- Welcome -->
+  <div class="welcome-banner">
+    <h1>Welcome back, {{ user.full_display_name }} 👋</h1>
+    <p>Here's what's happening with your academic journey</p>
+    {% if user.student_profile %}
+    <div style="display:flex;gap:.5rem;margin-top:.75rem;position:relative;z-index:1">
+      <span class="badge badge-primary">{{ user.student_profile.department }}</span>
+      <span class="badge badge-accent">Year {{ user.student_profile.year }}</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <a href="{% url 'student_resources' %}" class="stat-card stat-blue glass-card-hover">
+      <div><div class="stat-value">{{ stats.resources }}</div><div class="stat-label">My Resources</div></div>
+      <div class="stat-icon"><i data-lucide="book-open" style="width:22px;height:22px;color:#fff"></i></div>
+    </a>
+    <a href="{% url 'student_mentorship' %}" class="stat-card stat-purple glass-card-hover">
+      <div><div class="stat-value">{{ stats.mentorships }}</div><div class="stat-label">Mentorships</div></div>
+      <div class="stat-icon"><i data-lucide="users" style="width:22px;height:22px;color:#fff"></i></div>
+    </a>
+    <a href="{% url 'student_jobs' %}" class="stat-card stat-amber glass-card-hover">
+      <div><div class="stat-value">{{ stats.jobs }}</div><div class="stat-label">Available Jobs</div></div>
+      <div class="stat-icon"><i data-lucide="briefcase" style="width:22px;height:22px;color:#fff"></i></div>
+    </a>
+    <a href="{% url 'notifications' %}" class="stat-card stat-rose glass-card-hover">
+      <div><div class="stat-value">{{ stats.notifications }}</div><div class="stat-label">Notifications</div></div>
+      <div class="stat-icon"><i data-lucide="bell" style="width:22px;height:22px;color:#fff"></i></div>
+    </a>
+  </div>
+
+  <!-- Two columns -->
+  <div class="grid-2">
+    <!-- Career Guide -->
+    <div class="glass-card">
+      <div class="flex-between mb-4">
+        <h2 style="font-size:1.125rem;font-weight:700;color:var(--dark-50);display:flex;align-items:center;gap:.5rem">
+          <i data-lucide="lightbulb" style="width:20px;height:20px;color:#fbbf24"></i> Career Guide
+        </h2>
+        <a href="{% url 'student_career' %}" class="text-sm" style="display:flex;align-items:center;gap:.25rem">
+          View all <i data-lucide="arrow-right" style="width:16px;height:16px"></i>
+        </a>
+      </div>
+      {% if recommendations %}
+      <div class="space-y-sm">
+        {% for r in recommendations %}
+        <div style="display:flex;align-items:center;gap:.75rem;padding:.75rem;border-radius:.75rem;background:rgba(10,14,26,.5);border:1px solid rgba(42,47,62,.3)">
+          <div style="width:40px;height:40px;border-radius:.5rem;background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(16,185,129,.2));display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i data-lucide="trending-up" style="width:20px;height:20px;color:var(--primary-400)"></i>
+          </div>
+          <div style="flex:1;min-width:0">
+            <p style="font-size:.875rem;font-weight:500;color:var(--dark-50)">{{ r.title }}</p>
+            <p style="font-size:.75rem;color:var(--dark-500)">{{ r.matchPercentage }}% match</p>
+          </div>
+          <div class="progress-bar" style="width:64px"><div class="progress-fill" style="width:{{ r.matchPercentage }}%"></div></div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p style="color:var(--dark-500);font-size:.875rem">Complete your profile to get recommendations</p>
+      {% endif %}
+    </div>
+
+    <!-- Latest Jobs -->
+    <div class="glass-card">
+      <div class="flex-between mb-4">
+        <h2 style="font-size:1.125rem;font-weight:700;color:var(--dark-50);display:flex;align-items:center;gap:.5rem">
+          <i data-lucide="briefcase" style="width:20px;height:20px;color:#fbbf24"></i> Latest Jobs
+        </h2>
+        <a href="{% url 'student_jobs' %}" class="text-sm" style="display:flex;align-items:center;gap:.25rem">
+          View all <i data-lucide="arrow-right" style="width:16px;height:16px"></i>
+        </a>
+      </div>
+      {% if recent_jobs %}
+      <div class="space-y-sm">
+        {% for j in recent_jobs %}
+        <div style="padding:.75rem;border-radius:.75rem;background:rgba(10,14,26,.5);border:1px solid rgba(42,47,62,.3)">
+          <h3 style="font-weight:600;color:var(--dark-50);font-size:.875rem">{{ j.title }}</h3>
+          <p style="font-size:.75rem;color:var(--dark-400);margin-top:.25rem">{{ j.company }} · by {{ j.posted_by.full_display_name }}</p>
+          <div style="display:flex;gap:.25rem;flex-wrap:wrap;margin-top:.5rem">
+            {% for skill in j.skills_list|slice:":3" %}
+            <span class="skill-tag">{{ skill }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p style="color:var(--dark-500);font-size:.875rem">No jobs posted yet</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

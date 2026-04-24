@@ -1,0 +1,122 @@
+{% extends "dashboard.html" %}
+{% block title %}Mentorship — IUB Connect{% endblock %}
+{% block content %}
+<div class="space-y">
+  <div class="flex-between" style="flex-wrap:wrap;gap:1rem">
+    <div>
+      <h1 class="page-title"><i data-lucide="users" style="width:24px;height:24px;color:#a78bfa"></i> Mentorship</h1>
+      <p class="page-subtitle">Find alumni mentors & get guidance</p>
+    </div>
+    {% if accepted_count > 0 %}
+    <a href="{% url 'chat' %}" class="btn btn-primary">
+      <i data-lucide="message-circle" style="width:16px;height:16px"></i> Open Chat ({{ accepted_count }})
+    </a>
+    {% endif %}
+  </div>
+
+  <!-- Tabs -->
+  <div style="display:flex;gap:.5rem;padding:.25rem;background:rgba(26,31,46,.6);border-radius:.75rem;border:1px solid rgba(42,47,62,.3)">
+    <a href="?tab=mentors" class="btn btn-sm {% if tab == 'mentors' %}btn-primary{% else %}btn-secondary{% endif %}" style="flex:1;text-align:center">
+      <i data-lucide="graduation-cap" style="width:16px;height:16px"></i> Browse Mentors ({{ mentors|length }})
+    </a>
+    <a href="?tab=requests" class="btn btn-sm {% if tab == 'requests' %}btn-primary{% else %}btn-secondary{% endif %}" style="flex:1;text-align:center">
+      <i data-lucide="clock" style="width:16px;height:16px"></i> My Requests ({{ my_requests|length }})
+      {% if pending_count %}<span class="badge-count" style="margin-left:.5rem">{{ pending_count }}</span>{% endif %}
+    </a>
+  </div>
+
+  {% if tab == 'mentors' %}
+  <!-- Mentors Grid -->
+  <div class="grid-3 grid-responsive">
+    {% for mentor in mentors %}
+    <div class="mentor-card">
+      <div class="flex-gap">
+        <div class="avatar avatar-purple">
+          {% if mentor.profile_photo %}
+            <img src="{{ mentor.profile_photo.url }}" alt="">
+          {% else %}
+            {{ mentor.display_initial }}
+          {% endif %}
+        </div>
+        <div style="flex:1;min-width:0">
+          <h3 style="color:var(--dark-50);font-weight:600" class="truncate">{{ mentor.full_display_name }}</h3>
+          <p style="font-size:.875rem;color:var(--dark-400);display:flex;align-items:center;gap:.25rem;margin-top:.25rem">
+            <i data-lucide="briefcase" style="width:14px;height:14px"></i>
+            {{ mentor.alumni_profile.profession|default:"Alumni" }}
+          </p>
+          <span class="badge badge-primary" style="margin-top:.5rem">
+            <i data-lucide="graduation-cap" style="width:12px;height:12px"></i>
+            Class of {{ mentor.alumni_profile.graduation_year }}
+          </span>
+        </div>
+      </div>
+
+      <div style="margin-top:1rem">
+        {% if mentor.request_status == 'accepted' %}
+        <a href="{% url 'chat' %}" class="btn btn-accent btn-full btn-sm">
+          <i data-lucide="message-circle" style="width:16px;height:16px"></i> Chat Now
+        </a>
+        {% elif mentor.request_status == 'pending' %}
+        <div style="width:100%;padding:.5rem;text-align:center;border-radius:.75rem;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);color:var(--warning);font-size:.875rem;font-weight:500;display:flex;align-items:center;justify-content:center;gap:.5rem">
+          <i data-lucide="clock" style="width:16px;height:16px"></i> Request Pending
+        </div>
+        {% elif mentor.request_status == 'rejected' %}
+        <form method="post" action="{% url 'send_mentorship_request' mentor.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="message" value="">
+          <button type="submit" class="btn btn-secondary btn-full btn-sm">
+            <i data-lucide="refresh-cw" style="width:16px;height:16px"></i> Request Again
+          </button>
+        </form>
+        {% else %}
+        <form method="post" action="{% url 'send_mentorship_request' mentor.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="message" value="">
+          <button type="submit" class="btn btn-primary btn-full btn-sm">
+            <i data-lucide="user-plus" style="width:16px;height:16px"></i> Request Mentorship
+          </button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <div style="grid-column:1/-1;text-align:center;padding:3rem" class="glass-card">
+      <i data-lucide="users" style="width:48px;height:48px;color:var(--dark-700);margin:0 auto 1rem"></i>
+      <p style="color:var(--dark-500)">No alumni mentors available yet</p>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <!-- My Requests -->
+  <div class="space-y-sm">
+    {% for s in my_requests %}
+    <div class="glass-card" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+      <div class="avatar avatar-purple">
+        {% if s.mentor.profile_photo %}<img src="{{ s.mentor.profile_photo.url }}" alt="">{% else %}{{ s.mentor.display_initial }}{% endif %}
+      </div>
+      <div style="flex:1;min-width:0">
+        <p style="color:var(--dark-50);font-weight:600">{{ s.mentor.full_display_name }}</p>
+        <p style="font-size:.875rem;color:var(--dark-400)">{{ s.mentor.alumni_profile.profession|default:"Alumni" }} · Class of {{ s.mentor.alumni_profile.graduation_year }}</p>
+      </div>
+      <span class="badge {% if s.status == 'accepted' %}badge-accent{% elif s.status == 'rejected' %}badge-danger{% else %}badge-warning{% endif %}">
+        {% if s.status == 'accepted' %}<i data-lucide="check-circle" style="width:14px;height:14px"></i>{% elif s.status == 'rejected' %}<i data-lucide="x-circle" style="width:14px;height:14px"></i>{% else %}<i data-lucide="clock" style="width:14px;height:14px"></i>{% endif %}
+        {{ s.status }}
+      </span>
+      {% if s.status == 'accepted' %}
+      <a href="{% url 'chat' %}" class="btn btn-accent btn-sm">
+        <i data-lucide="message-circle" style="width:14px;height:14px"></i> Chat
+      </a>
+      {% endif %}
+    </div>
+    {% empty %}
+    <div class="glass-card" style="text-align:center;padding:3rem">
+      <i data-lucide="sparkles" style="width:48px;height:48px;color:var(--dark-700);margin:0 auto .75rem;display:block"></i>
+      <p style="color:var(--dark-500)">No requests yet</p>
+      <a href="?tab=mentors" class="btn btn-primary btn-sm" style="margin-top:1rem">Browse Mentors</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

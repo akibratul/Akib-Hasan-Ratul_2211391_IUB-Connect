@@ -1,0 +1,68 @@
+{% extends "dashboard.html" %}
+{% block title %}Dashboard — IUB Connect{% endblock %}
+{% block content %}
+<div class="space-y">
+  <div class="welcome-banner">
+    <h1>Welcome, {{ user.full_display_name }} 👋</h1>
+    <p>Manage your mentorship and career guidance activities</p>
+    {% if user.alumni_profile %}
+    <div style="display:flex;gap:.5rem;margin-top:.75rem;position:relative;z-index:1">
+      <span class="badge badge-primary">{{ user.alumni_profile.profession|default:"Alumni" }}</span>
+      <span class="badge badge-accent">Class of {{ user.alumni_profile.graduation_year }}</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="stats-grid">
+    <a href="{% url 'alumni_mentorship' %}" class="stat-card stat-purple glass-card-hover">
+      <div><div class="stat-value">{{ stats.incoming }}</div><div class="stat-label">Mentorship Requests</div></div>
+      <div class="stat-icon"><i data-lucide="users" style="width:22px;height:22px;color:#fff"></i></div>
+    </a>
+    <a href="{% url 'alumni_jobs' %}" class="stat-card stat-amber glass-card-hover">
+      <div><div class="stat-value">{{ stats.jobs }}</div><div class="stat-label">My Job Posts</div></div>
+      <div class="stat-icon"><i data-lucide="briefcase" style="width:22px;height:22px;color:#fff"></i></div>
+    </a>
+    <a href="{% url 'alumni_resources' %}" class="stat-card stat-blue glass-card-hover">
+      <div><div class="stat-value">{{ stats.resources }}</div><div class="stat-label">Total Resources</div></div>
+      <div class="stat-icon"><i data-lucide="book-open" style="width:22px;height:22px;color:#fff"></i></div>
+    </a>
+    <a href="{% url 'notifications' %}" class="stat-card stat-rose glass-card-hover">
+      <div><div class="stat-value">{{ stats.notifications }}</div><div class="stat-label">Notifications</div></div>
+      <div class="stat-icon"><i data-lucide="bell" style="width:22px;height:22px;color:#fff"></i></div>
+    </a>
+  </div>
+
+  <!-- Recent Requests -->
+  <div class="glass-card">
+    <div class="flex-between mb-4">
+      <h2 style="font-size:1.125rem;font-weight:700;color:var(--dark-50);display:flex;align-items:center;gap:.5rem">
+        <i data-lucide="users" style="width:20px;height:20px;color:#a78bfa"></i> Recent Mentorship Requests
+      </h2>
+      <a href="{% url 'alumni_mentorship' %}" class="text-sm" style="display:flex;align-items:center;gap:.25rem">
+        View all <i data-lucide="arrow-right" style="width:16px;height:16px"></i>
+      </a>
+    </div>
+    {% if sessions %}
+    <div class="space-y-sm">
+      {% for s in sessions %}
+      <div style="display:flex;align-items:center;gap:1rem;padding:.75rem;border-radius:.75rem;background:rgba(10,14,26,.5);border:1px solid rgba(42,47,62,.3)">
+        <div class="avatar avatar-blue" style="width:36px;height:36px;font-size:.875rem">
+          {% if s.student.profile_photo %}<img src="{{ s.student.profile_photo.url }}" alt="">{% else %}{{ s.student.display_initial }}{% endif %}
+        </div>
+        <div style="flex:1;min-width:0">
+          <p style="font-size:.875rem;font-weight:500;color:var(--dark-50)">{{ s.student.full_display_name }}</p>
+          <p style="font-size:.75rem;color:var(--dark-500)">{% if s.student.student_profile %}{{ s.student.student_profile.department }} · Year {{ s.student.student_profile.year }}{% else %}Student{% endif %}</p>
+        </div>
+        <span class="badge {% if s.status == 'accepted' %}badge-accent{% elif s.status == 'rejected' %}badge-danger{% else %}badge-warning{% endif %}">
+          {% if s.status == 'accepted' %}<i data-lucide="check-circle" style="width:12px;height:12px"></i>{% elif s.status == 'rejected' %}<i data-lucide="x-circle" style="width:12px;height:12px"></i>{% else %}<i data-lucide="clock" style="width:12px;height:12px"></i>{% endif %}
+          {{ s.status }}
+        </span>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p style="color:var(--dark-500);font-size:.875rem">No requests yet</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

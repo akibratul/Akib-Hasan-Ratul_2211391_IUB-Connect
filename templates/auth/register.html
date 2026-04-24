@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Register — IUB Connect{% endblock %}
+
+{% block body %}
+<div class="auth-page">
+  <!-- Left: Branding -->
+  <div class="auth-brand" style="background: linear-gradient(135deg, var(--accent-600), var(--primary-700), var(--primary-600));">
+    <div class="overlay"></div>
+    <div class="blob1"></div>
+    <div class="blob2"></div>
+    <div class="auth-brand-content">
+      <img src="{% static 'images/logo.png' %}" alt="IUB Connect" style="width:72px;height:72px;border-radius:50%;margin-bottom:2rem;box-shadow:0 8px 30px rgba(0,0,0,.3)">
+      <h1>Join<br>IUB Connect</h1>
+      <p>Start your academic journey with a community that cares about your growth.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem">
+        <div style="background:rgba(255,255,255,.05);backdrop-filter:blur(8px);border-radius:.75rem;padding:1rem;border:1px solid rgba(255,255,255,.1)">
+          <div style="color:#fff;font-weight:600;font-size:.875rem">Resources</div>
+          <div style="color:rgba(255,255,255,.5);font-size:.75rem;margin-top:.25rem">Share & access notes</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);backdrop-filter:blur(8px);border-radius:.75rem;padding:1rem;border:1px solid rgba(255,255,255,.1)">
+          <div style="color:#fff;font-weight:600;font-size:.875rem">Mentorship</div>
+          <div style="color:rgba(255,255,255,.5);font-size:.75rem;margin-top:.25rem">Learn from alumni</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);backdrop-filter:blur(8px);border-radius:.75rem;padding:1rem;border:1px solid rgba(255,255,255,.1)">
+          <div style="color:#fff;font-weight:600;font-size:.875rem">Careers</div>
+          <div style="color:rgba(255,255,255,.5);font-size:.75rem;margin-top:.25rem">Find opportunities</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);backdrop-filter:blur(8px);border-radius:.75rem;padding:1rem;border:1px solid rgba(255,255,255,.1)">
+          <div style="color:#fff;font-weight:600;font-size:.875rem">AI Guidance</div>
+          <div style="color:rgba(255,255,255,.5);font-size:.75rem;margin-top:.25rem">Smart recommendations</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Form -->
+  <div class="auth-form-side" style="overflow-y:auto">
+    <div class="auth-form animate-fade-in">
+      <h2>Create Account</h2>
+      <p class="subtitle">Fill in your details to get started</p>
+
+      <form method="post" action="{% url 'register' %}">
+        {% csrf_token %}
+        <!-- Role Selector -->
+        <div class="form-group">
+          <label>I am a</label>
+          <input type="hidden" name="role" id="role-input" value="{{ form.role.value|default:'student' }}">
+          <div class="role-selector">
+            <button type="button" class="role-btn {% if form.role.value != 'alumni' %}active{% endif %}" data-role="student">🎓 Student</button>
+            <button type="button" class="role-btn {% if form.role.value == 'alumni' %}active{% endif %}" data-role="alumni">👨‍💼 Alumni</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="register-name">Full Name</label>
+          <input type="text" name="name" id="register-name" class="input-field" placeholder="Your full name" required value="{{ form.name.value|default:'' }}">
+        </div>
+        <div class="form-group">
+          <label for="register-email">Email</label>
+          <input type="email" name="email" id="register-email" class="input-field" placeholder="{% if form.role.value == 'alumni' %}you@example.com{% else %}2211391@iub.edu.bd{% endif %}" required value="{{ form.email.value|default:'' }}">
+          <p class="hint" id="student-email-hint" {% if form.role.value == 'alumni' %}style="display:none"{% endif %}>Must be a valid IUB student ID email (ends with @iub.edu.bd)</p>
+        </div>
+        <div class="form-group">
+          <label for="register-password">Password</label>
+          <input type="password" name="password" id="register-password" class="input-field" placeholder="Min 6 characters" required minlength="6">
+        </div>
+
+        <!-- Student Fields -->
+        <div id="student-fields" {% if form.role.value == 'alumni' %}style="display:none"{% endif %}>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Department</label>
+              <select name="department" class="input-field">
+                <option value="CSE">CSE</option><option value="BBA">BBA</option>
+                <option value="EEE">EEE</option><option value="ECO">ECO</option>
+                <option value="ENG">ENG</option><option value="PHY">PHY</option>
+                <option value="MATH">MATH</option><option value="SOC">SOC</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Year</label>
+              <select name="year" class="input-field">
+                <option value="1">Year 1</option><option value="2">Year 2</option>
+                <option value="3">Year 3</option><option value="4">Year 4</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Skills <span style="color:var(--dark-500)">(comma-separated)</span></label>
+            <input type="text" name="skills" class="input-field" placeholder="Python, React, SQL...">
+          </div>
+          <div class="form-group">
+            <label>Interests <span style="color:var(--dark-500)">(optional)</span></label>
+            <input type="text" name="interests" class="input-field" placeholder="AI, Web Development, Data Science...">
+          </div>
+        </div>
+
+        <!-- Alumni Fields -->
+        <div id="alumni-fields" {% if form.role.value != 'alumni' %}style="display:none"{% endif %}>
+          <div class="form-group">
+            <label>Graduation Year</label>
+            <input type="number" name="graduation_year" class="input-field" value="2020" min="1990" max="2026">
+          </div>
+          <div class="form-group">
+            <label>Current Profession</label>
+            <input type="text" name="profession" class="input-field" placeholder="Software Engineer at Google...">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" style="padding:.75rem;margin-top:1rem">
+          Create Account <i data-lucide="arrow-right" style="width:18px;height:18px"></i>
+        </button>
+      </form>
+
+      <p style="margin-top:1.5rem;text-align:center;color:var(--dark-400)">
+        Already have an account?
+        <a href="{% url 'login' %}" style="font-weight:500">Sign in</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
