@@ -4,9 +4,9 @@ django.setup()
 from core.models import User, StudentProfile, AlumniProfile
 
 # Create admin
-if not User.objects.filter(email='admin@iub.edu.bd').exists():
-    admin = User.objects.create_superuser(username='admin@iub.edu.bd', email='admin@iub.edu.bd', password='admin123', first_name='Admin', role='admin')
-    print('Admin created: admin@iub.edu.bd / admin123')
+if not User.objects.filter(email='admin@iub.edu').exists():
+    admin = User.objects.create_superuser(username='admin@iub.edu', email='admin@iub.edu', password='admin123', first_name='Admin', role='admin')
+    print('Admin created: admin@iub.edu / admin123')
 
 # Create student
 if not User.objects.filter(email='2211391@iub.edu.bd').exists():
