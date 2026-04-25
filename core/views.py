@@ -293,7 +293,7 @@ def alumni_dashboard(request):
     incoming = MentorshipSession.objects.filter(mentor=user).select_related('student', 'student__student_profile')
     jobs_count = Job.objects.filter(posted_by=user).count()
     notif_count = Notification.objects.filter(user=user, read=False).count()
-    resources_count = Resource.objects.count()
+    resources_count = Resource.objects.filter(uploaded_by=user).count()
 
     return render(request, 'alumni/dashboard.html', {
         'stats': {
