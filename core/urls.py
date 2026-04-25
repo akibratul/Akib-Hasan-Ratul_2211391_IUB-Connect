@@ -30,6 +30,7 @@ urlpatterns = [
 
     # Shared
     path('resource/delete/<int:resource_id>/', views.delete_resource, name='delete_resource'),
+    path('resource/edit/<int:resource_id>/', views.edit_resource, name='alumni_edit_resource'),
     path('notifications/', views.notifications_view, name='notifications'),
     path('notifications/read-all/', views.mark_all_read, name='mark_all_read'),
     path('notifications/<int:notif_id>/read/', views.mark_read, name='mark_read'),

@@ -423,12 +423,8 @@ def alumni_resources(request):
             messages.error(request, 'Title and file required.')
         return redirect('alumni_resources')
 
-    tab = request.GET.get('tab', 'all')
-    if tab == 'my':
-        resources = Resource.objects.filter(uploaded_by=request.user)
-    else:
-        resources = Resource.objects.select_related('uploaded_by').all()
-    return render(request, 'alumni/resources.html', {'resources': resources, 'tab': tab})
+    resources = Resource.objects.filter(uploaded_by=request.user)
+    return render(request, 'alumni/resources.html', {'resources': resources})
 
 
 # ==================== SHARED VIEWS ====================
@@ -437,6 +433,22 @@ def delete_resource(request, resource_id):
     resource = get_object_or_404(Resource, id=resource_id, uploaded_by=request.user)
     resource.delete()
     messages.success(request, 'Resource deleted.')
+    if request.user.role == 'student':
+        return redirect('student_resources')
+    return redirect('alumni_resources')
+
+
+@login_required
+def edit_resource(request, resource_id):
+    resource = get_object_or_404(Resource, id=resource_id, uploaded_by=request.user)
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        if title:
+            resource.title = title
+            resource.save()
+            messages.success(request, 'Resource updated!')
+        else:
+            messages.error(request, 'Title cannot be empty.')
     if request.user.role == 'student':
         return redirect('student_resources')
     return redirect('alumni_resources')
