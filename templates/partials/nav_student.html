@@ -9,6 +9,7 @@
 </a>
 <a href="{% url 'chat' %}" class="nav-link {% if request.resolver_match.url_name == 'chat' %}active{% endif %}">
   <i data-lucide="message-circle" style="width:18px;height:18px"></i> Messages
+  {% if unread_messages_count %}<span class="badge-count">{{ unread_messages_count }}</span>{% endif %}
 </a>
 <a href="{% url 'student_jobs' %}" class="nav-link {% if request.resolver_match.url_name == 'student_jobs' %}active{% endif %}">
   <i data-lucide="briefcase" style="width:18px;height:18px"></i> Jobs

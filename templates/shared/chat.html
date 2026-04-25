@@ -15,15 +15,19 @@
     <div class="chat-sidebar-list">
       {% for c in connections %}
       <a href="?user={{ c.user.id }}" class="chat-contact {% if selected_user and selected_user.id == c.user.id %}active{% endif %}">
-        <div class="avatar {% if c.role == 'alumni' %}avatar-purple{% else %}avatar-blue{% endif %}" style="width:44px;height:44px;font-size:1rem">
+        <div class="avatar {% if c.role == 'alumni' %}avatar-purple{% else %}avatar-blue{% endif %}" style="width:44px;height:44px;font-size:1rem;position:relative">
           {% if c.user.profile_photo %}<img src="{{ c.user.profile_photo.url }}" alt="">{% else %}{{ c.user.display_initial }}{% endif %}
+          {% if c.unread_count %}<span class="chat-unread-dot"></span>{% endif %}
         </div>
         <div style="flex:1;min-width:0">
           <div class="flex-between">
             <p style="font-weight:600;color:var(--dark-50);font-size:.875rem" class="truncate">{{ c.user.full_display_name }}</p>
             <span style="font-size:.625rem;color:var(--dark-500)">{{ c.last_time|timesince }} ago</span>
           </div>
-          <p style="font-size:.75rem;color:var(--dark-500);margin-top:.125rem" class="truncate">{{ c.last_message|default:"Start a conversation..." }}</p>
+          <div class="flex-between" style="margin-top:.125rem">
+            <p style="font-size:.75rem;color:{% if c.unread_count %}var(--dark-200){% else %}var(--dark-500){% endif %};{% if c.unread_count %}font-weight:600{% endif %}" class="truncate">{{ c.last_message|default:"Start a conversation..." }}</p>
+            {% if c.unread_count %}<span class="chat-unread-badge">{{ c.unread_count }}</span>{% endif %}
+          </div>
         </div>
       </a>
       {% empty %}

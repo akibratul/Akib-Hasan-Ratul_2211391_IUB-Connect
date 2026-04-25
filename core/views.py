@@ -525,12 +525,14 @@ def chat_view(request):
             last_msg = Message.objects.filter(
                 Q(sender=user, receiver=s.mentor) | Q(sender=s.mentor, receiver=user)
             ).order_by('-created_at').first()
+            unread = Message.objects.filter(sender=s.mentor, receiver=user, read=False).count()
             connections.append({
                 'user': s.mentor, 'session_id': s.id,
                 'role': 'alumni',
                 'info': getattr(s.mentor, 'alumni_profile', None),
                 'last_message': last_msg.message if last_msg else None,
                 'last_time': last_msg.created_at if last_msg else s.created_at,
+                'unread_count': unread,
             })
     elif user.role == 'alumni':
         sessions = MentorshipSession.objects.filter(mentor=user, status='accepted').select_related('student', 'student__student_profile')
@@ -539,12 +541,14 @@ def chat_view(request):
             last_msg = Message.objects.filter(
                 Q(sender=user, receiver=s.student) | Q(sender=s.student, receiver=user)
             ).order_by('-created_at').first()
+            unread = Message.objects.filter(sender=s.student, receiver=user, read=False).count()
             connections.append({
                 'user': s.student, 'session_id': s.id,
                 'role': 'student',
                 'info': getattr(s.student, 'student_profile', None),
                 'last_message': last_msg.message if last_msg else None,
                 'last_time': last_msg.created_at if last_msg else s.created_at,
+                'unread_count': unread,
             })
     else:
         connections = []
@@ -567,6 +571,8 @@ def chat_view(request):
                 chat_messages = Message.objects.filter(
                     Q(sender=user, receiver=selected_user) | Q(sender=selected_user, receiver=user)
                 ).order_by('created_at')
+                # Mark messages from selected_user as read
+                Message.objects.filter(sender=selected_user, receiver=user, read=False).update(read=True)
             else:
                 selected_user = None
         except (User.DoesNotExist, ValueError):

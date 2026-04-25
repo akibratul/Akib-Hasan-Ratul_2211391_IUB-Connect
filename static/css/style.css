@@ -273,6 +273,27 @@ textarea.input-field { resize: vertical; min-height: 80px; }
 .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 2rem; }
 .empty-icon { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, rgba(99, 102, 241, .1), rgba(16, 185, 129, .1)); display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
 
+/* Chat Unread Badges */
+.chat-unread-badge {
+  flex-shrink: 0; min-width: 20px; height: 20px; padding: 0 6px;
+  border-radius: 9999px; background: var(--primary-500);
+  color: #fff; font-size: .6875rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, .4);
+  animation: badgePop .3s ease-out;
+}
+.chat-unread-dot {
+  position: absolute; bottom: 0; right: 0;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--accent-500); border: 2px solid var(--dark-800);
+  box-shadow: 0 0 6px rgba(16, 185, 129, .5);
+}
+@keyframes badgePop {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
 /* ========== MODAL ========== */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem;
