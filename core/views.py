@@ -411,8 +411,24 @@ def delete_job(request, job_id):
 @login_required
 @role_required('alumni')
 def alumni_resources(request):
-    resources = Resource.objects.select_related('uploaded_by').all()
-    return render(request, 'alumni/resources.html', {'resources': resources})
+    if request.method == 'POST':
+        title = request.POST.get('title', '')
+        file = request.FILES.get('file')
+        if title and file:
+            Resource.objects.create(
+                title=title, file=file, original_name=file.name, uploaded_by=request.user
+            )
+            messages.success(request, 'Resource uploaded!')
+        else:
+            messages.error(request, 'Title and file required.')
+        return redirect('alumni_resources')
+
+    tab = request.GET.get('tab', 'all')
+    if tab == 'my':
+        resources = Resource.objects.filter(uploaded_by=request.user)
+    else:
+        resources = Resource.objects.select_related('uploaded_by').all()
+    return render(request, 'alumni/resources.html', {'resources': resources, 'tab': tab})
 
 
 # ==================== SHARED VIEWS ====================
