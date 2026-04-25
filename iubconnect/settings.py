@@ -94,11 +94,18 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # ==================== MEDIA / FILE UPLOADS ====================
 # Use Cloudinary on Render (production), local filesystem otherwise
-if os.environ.get('CLOUDINARY_URL'):
+CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL', '')
+
+if CLOUDINARY_URL:
+    # Parse credentials from CLOUDINARY_URL
+    # Format: cloudinary://API_KEY:API_SECRET@CLOUD_NAME
+    import cloudinary
+    cloudinary.config(cloudinary_url=CLOUDINARY_URL)
+
     CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
-        'API_KEY': os.environ.get('CLOUDINARY_API_KEY', ''),
-        'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', ''),
+        'CLOUD_NAME': cloudinary.config().cloud_name,
+        'API_KEY': cloudinary.config().api_key,
+        'API_SECRET': cloudinary.config().api_secret,
     }
     STORAGES = {
         "default": {
