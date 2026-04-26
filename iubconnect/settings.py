@@ -28,8 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cloudinary_storage',
-    'cloudinary',
+
     'channels',
     'core',
 ]
@@ -93,40 +92,17 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # ==================== MEDIA / FILE UPLOADS ====================
-# Use Cloudinary on Render (production), local filesystem otherwise
-CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL', '')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
-if CLOUDINARY_URL:
-    # Parse credentials from CLOUDINARY_URL
-    # Format: cloudinary://API_KEY:API_SECRET@CLOUD_NAME
-    import cloudinary
-    cloudinary.config(cloudinary_url=CLOUDINARY_URL)
-
-    CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': cloudinary.config().cloud_name,
-        'API_KEY': cloudinary.config().api_key,
-        'API_SECRET': cloudinary.config().api_secret,
-    }
-    STORAGES = {
-        "default": {
-            "BACKEND": "cloudinary_storage.storage.RawMediaCloudinaryStorage",
-        },
-        "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-        },
-    }
-    MEDIA_URL = '/media/'
-else:
-    STORAGES = {
-        "default": {
-            "BACKEND": "django.core.files.storage.FileSystemStorage",
-        },
-        "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-        },
-    }
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
